@@ -56,6 +56,10 @@
         .fade-in-up { animation: fadeInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; opacity: 0; transform: translateY(20px); }
         .delay-1 { animation-delay: 0.1s; }
         @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        
+        /* Notifikasi Sukses Modern */
+        .success-card { background-color: #f0fdf4; border: 2px dashed #bbf7d0; color: #166534; border-radius: 20px; box-shadow: 0 10px 25px rgba(22, 101, 52, 0.1); }
+        .ticket-number-box { background-color: #ffffff; border: 2px solid #22c55e; border-radius: 15px; padding: 15px 30px; display: inline-block; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.15); }
     </style>
 </head>
 <body>
@@ -72,104 +76,161 @@
 
     <div class="form-container fade-in-up">
         
-        <div class="text-center mb-4">
-            <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary rounded-circle mb-3 shadow-sm" style="width: 75px; height: 75px;">
-                <i class="fa-solid fa-headset fa-2x"></i>
-            </div>
-            <h3 class="fw-bolder text-dark mb-1">Laporkan Masalah IT</h3>
-            <p class="text-muted">Isi formulir di bawah ini agar Tim IT dapat segera membantu Anda.</p>
-        </div>
-
-        <?php if(session()->getFlashdata('pesan_error')): ?>
-            <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm rounded-4 mb-4" style="background-color: #ffe2e5; color: #f64e60;">
-                <i class="fa-solid fa-triangle-exclamation me-2"></i><?= session()->getFlashdata('pesan_error'); ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <?php if(session()->getFlashdata('kode_tiket_baru')): ?>
+            <div class="success-card p-5 text-center mb-5 fade-in-up delay-1">
+                <div class="mb-3">
+                    <i class="fa-solid fa-circle-check fa-4x text-success"></i>
+                </div>
+                <h3 class="fw-bolder mb-2">Laporan Berhasil Terkirim!</h3>
+                <p class="mb-4">Tim IT telah menerima laporan Anda. Silakan simpan dan <b>Salin Nomor Tiket</b> di bawah ini untuk melacak status perbaikan.</p>
+                
+                <div class="ticket-number-box mb-4 position-relative">
+                    <span class="text-muted fw-bold d-block mb-1" style="font-size: 0.85rem; letter-spacing: 1px;">NOMOR TIKET ANDA</span>
+                    <span class="fs-2 fw-bolder text-success" id="kodeTiket" style="letter-spacing: 2px;">
+                        <?= session()->getFlashdata('kode_tiket_baru'); ?>
+                    </span>
+                    <br>
+                    <button onclick="salinTiket()" id="btnSalin" class="btn btn-sm btn-outline-success rounded-pill mt-3 fw-bold px-3">
+                        <i class="fa-regular fa-copy me-1"></i> Salin Nomor
+                    </button>
+                </div>
+                <br>
+                
+                <a href="<?= site_url('tiket/lacak?keyword=' . session()->getFlashdata('kode_tiket_baru')); ?>" class="btn btn-success rounded-pill px-5 py-3 fw-bold shadow-sm btn-hover-scale">
+                    <i class="fa-solid fa-magnifying-glass me-2"></i> Lacak Tiket Sekarang
+                </a>
             </div>
         <?php endif; ?>
 
-        <div class="card-custom mb-5 delay-1">
-            <form action="/tiket/simpan" method="post">
-                <?= csrf_field(); ?>
-                
-                <div class="row g-4 mb-4 pb-3 border-bottom border-light">
-                    <div class="col-md-6">
-                        <label class="form-label"><i class="fa-solid fa-building me-1 text-primary"></i> Lokasi Plant <span class="text-danger">*</span></label>
-                        <select class="form-select fw-semibold" name="lokasi" id="lokasi" required>
-                            <option value="">-- Pilih Lokasi Plant Anda --</option>
-                            <option value="Mojoagung">Plant Mojoagung</option>
-                            <option value="Krian">Plant Krian</option>
-                            <option value="Batang">Plant Batang</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label"><i class="fa-solid fa-users-rectangle me-1 text-primary"></i> Divisi / Departemen <span class="text-danger">*</span></label>
-                        <div class="input-with-icon">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                            <select name="departemen" id="departemen" placeholder="-- Pilih Lokasi Dulu --" required disabled>
-                                <option value="">-- Pilih Lokasi Dulu --</option>
+        <?php if(!session()->getFlashdata('kode_tiket_baru')): ?>
+            
+            <div class="text-center mb-4">
+                <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary rounded-circle mb-3 shadow-sm" style="width: 75px; height: 75px;">
+                    <i class="fa-solid fa-headset fa-2x"></i>
+                </div>
+                <h3 class="fw-bolder text-dark mb-1">Laporkan Masalah IT</h3>
+                <p class="text-muted">Isi formulir di bawah ini agar Tim IT dapat segera membantu Anda.</p>
+            </div>
+
+            <?php if(session()->getFlashdata('pesan_error')): ?>
+                <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm rounded-4 mb-4" style="background-color: #ffe2e5; color: #f64e60;">
+                    <i class="fa-solid fa-triangle-exclamation me-2"></i><?= session()->getFlashdata('pesan_error'); ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <?php endif; ?>
+
+            <div class="card-custom mb-5 delay-1">
+                <form action="<?= site_url('tiket/store'); ?>" method="post">
+                    <?= csrf_field(); ?>
+                    
+                    <div class="row g-4 mb-4 pb-3 border-bottom border-light">
+                        <div class="col-md-6">
+                            <label class="form-label"><i class="fa-solid fa-building me-1 text-primary"></i> Lokasi Plant <span class="text-danger">*</span></label>
+                            <select class="form-select fw-semibold" name="lokasi" id="lokasi" required>
+                                <option value="">-- Pilih Lokasi Plant Anda --</option>
+                                <option value="Mojoagung">Plant Mojoagung</option>
+                                <option value="Krian">Plant Krian</option>
+                                <option value="Batang">Plant Batang</option>
                             </select>
                         </div>
-                        <small id="deptHelp" class="form-text text-muted" style="font-size: 0.75rem; margin-top: 6px; display: none;">
-                            <i class="fa-solid fa-circle-info me-1 opacity-75"></i>Pilih lokasi plant untuk memunculkan divisi.
-                        </small>
-                    </div>
-                </div>
-
-                <div class="row g-4 mb-4 pb-3 border-bottom border-light">
-                    <div class="col-md-6">
-                        <label class="form-label"><i class="fa-solid fa-user me-1 text-primary"></i> Nama Lengkap <span class="text-danger">*</span></label>
-                        <div class="input-with-icon">
-                            <i class="fa-regular fa-id-badge"></i>
-                            <input type="text" class="form-control text-uppercase" name="nama_pelapor" placeholder="MISAL: BUDI SANTOSO" required autocomplete="name">
+                        <div class="col-md-6">
+                            <label class="form-label"><i class="fa-solid fa-users-rectangle me-1 text-primary"></i> Divisi / Departemen <span class="text-danger">*</span></label>
+                            <div class="input-with-icon">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <select name="departemen" id="departemen" placeholder="-- Pilih Lokasi Dulu --" required disabled>
+                                    <option value="">-- Pilih Lokasi Dulu --</option>
+                                </select>
+                            </div>
+                            <small id="deptHelp" class="form-text text-muted" style="font-size: 0.75rem; margin-top: 6px; display: none;">
+                                <i class="fa-solid fa-circle-info me-1 opacity-75"></i>Pilih lokasi plant untuk memunculkan divisi.
+                            </small>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label"><i class="fa-brands fa-whatsapp me-1 text-success fs-6"></i> No. WhatsApp (Aktif) <span class="text-danger">*</span></label>
-                        <div class="input-with-icon">
-                            <i class="fa-solid fa-phone"></i>
-                            <input type="number" class="form-control" name="whatsapp" placeholder="Misal: 08123456789" required>
+
+                    <div class="row g-4 mb-4 pb-3 border-bottom border-light">
+                        <div class="col-md-6">
+                            <label class="form-label"><i class="fa-solid fa-user me-1 text-primary"></i> Nama Lengkap <span class="text-danger">*</span></label>
+                            <div class="input-with-icon">
+                                <i class="fa-regular fa-id-badge"></i>
+                                <input type="text" class="form-control text-uppercase" name="nama_pelapor" placeholder="MISAL: BUDI SANTOSO" required autocomplete="name">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label"><i class="fa-brands fa-whatsapp me-1 text-success fs-6"></i> No. WhatsApp (Aktif) <span class="text-danger">*</span></label>
+                            <div class="input-with-icon">
+                                <i class="fa-solid fa-phone"></i>
+                                <input type="number" class="form-control" name="whatsapp" placeholder="Misal: 08123456789" required>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="mb-4 mt-3">
-                    <label class="form-label"><i class="fa-solid fa-desktop me-1 text-primary"></i> Jelaskan Kendala Anda <span class="text-danger">*</span></label>
-                    <textarea class="form-control" name="deskripsi" rows="4" placeholder="Jelaskan secara detail masalah yang Anda alami. &#10;Misal: Printer Epson tidak bisa merespon print dari komputer, atau jaringan internet tiba-tiba mati..." required></textarea>
-                </div>
+                    <div class="mb-4 mt-3">
+                        <label class="form-label"><i class="fa-solid fa-desktop me-1 text-primary"></i> Jelaskan Kendala Anda <span class="text-danger">*</span></label>
+                        <textarea class="form-control" name="deskripsi" rows="4" placeholder="Jelaskan secara detail masalah yang Anda alami. &#10;Misal: Printer Epson tidak bisa merespon print dari komputer, atau jaringan internet tiba-tiba mati..." required></textarea>
+                    </div>
 
-                <button type="submit" class="btn btn-submit shadow-sm mt-3">
-                    <i class="fa-regular fa-paper-plane me-2"></i> Kirim Tiket Laporan
-                </button>
-            </form>
-        </div>
-    </div>
+                    <button type="submit" class="btn btn-submit shadow-sm mt-3">
+                        <i class="fa-regular fa-paper-plane me-2"></i> Kirim Tiket Laporan
+                    </button>
+                </form>
+            </div>
+
+        <?php endif; ?> </div>
 
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const dataDepartemen = <?= json_encode($departemen ?? []); ?>;
+    // ==========================================
+    // FUNGSI UNTUK MENYALIN NOMOR TIKET
+    // ==========================================
+    function salinTiket() {
+        // Mengambil text nomor tiket
+        var teksTiket = document.getElementById("kodeTiket").innerText.trim();
         
+        // Memasukkan ke clipboard
+        navigator.clipboard.writeText(teksTiket).then(function() {
+            var btn = document.getElementById("btnSalin");
+            // Ubah tampilan tombol jadi sukses
+            btn.innerHTML = '<i class="fa-solid fa-check me-1"></i> Berhasil Disalin!';
+            btn.classList.remove('btn-outline-success');
+            btn.classList.add('btn-success', 'text-white');
+            
+            // Kembalikan seperti semula setelah 3 detik
+            setTimeout(function() {
+                btn.innerHTML = '<i class="fa-regular fa-copy me-1"></i> Salin Nomor';
+                btn.classList.remove('btn-success', 'text-white');
+                btn.classList.add('btn-outline-success');
+            }, 3000);
+        }).catch(function(err) {
+            alert('Gagal menyalin text: ', err);
+        });
+    }
+
+    // ==========================================
+    // FUNGSI UNTUK DROPDOWN DIVISI (TOM SELECT)
+    // ==========================================
+    document.addEventListener('DOMContentLoaded', function() {
+        // Cek apakah dropdown lokasi ada (bisa jadi tidak ada jika form sedang disembunyikan)
         const selectLokasi = document.getElementById('lokasi');
+        if(!selectLokasi) return; // Hentikan script jika form tidak ada
+
+        const dataDepartemen = <?= json_encode($departemen ?? []); ?>;
         const deptHelp = document.getElementById('deptHelp');
 
-        // 1. Inisialisasi Tom Select (Fitur Search)
         const deptSelectInstance = new TomSelect("#departemen", {
             create: false,
             sortField: { field: "text", direction: "asc" },
             placeholder: "-- Pilih Lokasi Plant Dulu --"
         });
 
-        // Tampilkan teks bantuan saat form pertama dimuat
         if(selectLokasi.value === "") {
             deptHelp.style.display = 'block';
         }
 
-        // 2. Event saat lokasi plant dipilih/diubah
         selectLokasi.addEventListener('change', function() {
             const lokasiDipilih = this.value;
             
-            // Bersihkan data dropdown yang lama
             deptSelectInstance.clear();
             deptSelectInstance.clearOptions();
             
@@ -179,17 +240,14 @@
                 return;
             }
 
-            // Buka dropdown, set placeholder baru agar klien mencari
             deptSelectInstance.enable();
             deptSelectInstance.settings.placeholder = "Ketik / Cari Divisi Anda...";
-            deptSelectInstance.inputState(); // Update tampilan input
+            deptSelectInstance.inputState(); 
             deptHelp.style.display = 'none';
             
-            // Filter divisi sesuai plant
             const filteredDept = dataDepartemen.filter(d => d.lokasi_plant.toLowerCase() === lokasiDipilih.toLowerCase());
             
             if (filteredDept.length > 0) {
-                // Masukkan opsi baru ke dalam Tom Select
                 filteredDept.forEach(d => {
                     deptSelectInstance.addOption({ value: d.nama_departemen, text: d.nama_departemen.toUpperCase() });
                 });
@@ -199,7 +257,5 @@
         });
     });
     </script>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
