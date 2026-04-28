@@ -287,6 +287,7 @@ class AdminController extends BaseController
     }
     public function teknisiUpdate($id)
 {
+    $id = (int) $id;
     $userModel = new \App\Models\UserModel();
     
     // Pastikan data yang diupdate sesuai dengan kolom di database Anda
@@ -305,6 +306,7 @@ class AdminController extends BaseController
     public function deleteTeknisi($id)
     {
         if(session('role') != 'superadmin') return redirect()->to('/admin/users');
+        $id = (int) $id;
 
         $this->userModel->delete($id);
         return redirect()->to('/admin/teknisi')->with('pesan', 'Data Teknisi berhasil dihapus.');

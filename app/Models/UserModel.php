@@ -9,5 +9,6 @@ class UserModel extends Model
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useTimestamps    = true;
+    protected $dateFormat    = 'datetime';
     protected $allowedFields    = ['nama', 'email', 'password', 'role', 'departemen', 'lokasi'];
 }

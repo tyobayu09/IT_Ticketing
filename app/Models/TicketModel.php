@@ -9,6 +9,7 @@ class TicketModel extends Model
     protected $useAutoIncrement = true;
     protected $returnType = 'array';
     protected $useTimestamps = true;
+    protected $dateFormat    = 'datetime';
     
 protected $allowedFields = ['kode_tiket', 'lokasi', 'nama_pelapor', 'departemen', 'no_wa', 'kategori', 'deskripsi', 'status', 'teknisi_id', 'waktu_mulai', 'waktu_selesai', 'catatan_admin', 'ganti_hardware', 'prioritas'];
     // Fungsi untuk menarik data tiket sekaligus nama teknisinya

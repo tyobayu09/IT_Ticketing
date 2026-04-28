@@ -70,12 +70,13 @@
                             </td>
                             
                             <td class="border-bottom-dashed">
-                                <span class="text-muted fw-medium" style="font-size: 0.85rem;"><?= strtolower(esc($t['departemen'])); ?></span>
+                                <span class="text-muted fw-medium" style="font-size: 0.85rem;"><?= strtoupper(esc($t['departemen'])); ?></span>
                             </td>
                             
                             <td class="border-bottom-dashed" style="max-width: 250px;">
-                                <div class="text-dark fw-bold" style="font-size: 0.85rem;"><?= esc($t['kategori'] ?? 'Umum'); ?></div>
-                                <div class="text-muted text-truncate" style="font-size: 0.8rem;"><?= esc($t['deskripsi']); ?></div>
+                                <div class="text-dark fw-medium" style="font-size: 0.85rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;" title="<?= esc($t['deskripsi']); ?>">
+                                    <?= esc($t['deskripsi']); ?>
+                                </div>
                             </td>
                             
                             <td class="text-center border-bottom-dashed">

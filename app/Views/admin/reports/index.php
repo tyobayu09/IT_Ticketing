@@ -153,9 +153,10 @@ elseif ($lokasi_login == 'Pusat') { $alamat = "Jl. Taman Sidoarjo No. 1, Sidoarj
                                 <span class="text-muted print-text-dark" style="font-size: 0.75rem;"><i class="fa-regular fa-building me-1 opacity-50"></i><?= $t['departemen']; ?></span>
                             </td>
                             
-                            <td class="align-middle py-2">
-                                <span class="badge bg-light text-secondary border d-inline-block mb-1 print-text-dark fw-bold px-2 py-0" style="font-size: 0.65rem;"><?= strtoupper($t['kategori']); ?></span>
-                                <span class="print-text-desc d-block text-dark fw-medium" style="font-size: 0.8rem; line-height: 1.3;"><?= nl2br(esc(substr($t['deskripsi'], 0, 90))); ?><?= strlen($t['deskripsi']) > 90 ? '...' : '' ?></span>
+                            <td style="max-width: 200px;">
+                             <div class="text-dark fw-medium" style="font-size: 0.85rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;" title="<?= esc($t['deskripsi']); ?>">
+                                  <?= esc($t['deskripsi']); ?>
+                             </div>
                             </td>
                             
                             <td class="align-middle py-2">
